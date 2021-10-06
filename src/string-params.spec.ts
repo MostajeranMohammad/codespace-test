@@ -3,12 +3,15 @@ import { StringParams } from './string-params.model';
 
 test('testing encoder: must create formatted string.', () => {
   const stringParams = new StringParams(
+    'map',
     'firstOption',
     'http//example.com/hello.txt',
     '1',
   ).encode();
   expect(stringParams).toMatch(
-    'firstOption' +
+    'map' +
+      spliterCharacter +
+      'firstOption' +
       spliterCharacter +
       'http//example.com/hello.txt' +
       spliterCharacter +
@@ -18,12 +21,15 @@ test('testing encoder: must create formatted string.', () => {
 
 test('testing encoder with special characters: must create formatted string.', () => {
   const stringParams = new StringParams(
+    'map',
     'firstOption',
     'http//example.com/{^}%/hello.txt',
     '1',
   ).encode();
   expect(stringParams).toMatch(
-    'firstOption' +
+    'map' +
+      spliterCharacter +
+      'firstOption' +
       spliterCharacter +
       encodeURI('http//example.com/{^}%/hello.txt') +
       spliterCharacter +
@@ -33,25 +39,34 @@ test('testing encoder with special characters: must create formatted string.', (
 
 test('testing decoder: must create StringParams Object correctly.', () => {
   const formatedString =
+    'map' +
+    spliterCharacter +
     'firstOption' +
     spliterCharacter +
     'http//example.com/hello.txt' +
     spliterCharacter +
     '1';
   expect(StringParams.decode(formatedString)).toEqual(
-    new StringParams('firstOption', 'http//example.com/hello.txt', '1'),
+    new StringParams('map', 'firstOption', 'http//example.com/hello.txt', '1'),
   );
 });
 
 test('testing decoder with special characters: must create StringParams Object correctly.', () => {
   const formatedString =
+    'map' +
+    spliterCharacter +
     'firstOption' +
     spliterCharacter +
     encodeURI('http//example.com/{^}%/hello.txt') +
     spliterCharacter +
     '1';
   expect(StringParams.decode(formatedString)).toEqual(
-    new StringParams('firstOption', 'http//example.com/{^}%/hello.txt', '1'),
+    new StringParams(
+      'map',
+      'firstOption',
+      'http//example.com/{^}%/hello.txt',
+      '1',
+    ),
   );
 });
 
@@ -71,17 +86,19 @@ test('testing decoder: must throw error because of wrong spliterCharacter.', () 
 });
 
 test('testing decoder: must throw error because of wrong part count.', () => {
-  let formatedString =
+  let formatedString = // too many params
     'firstOption' +
     spliterCharacter +
     'http//example.com/hello.txt' +
     spliterCharacter +
     '1' +
     spliterCharacter +
+    '1' +
+    spliterCharacter +
     'http//example.com/hello.txt';
   expect(() => StringParams.decode(formatedString)).toThrow();
 
-  formatedString =
+  formatedString = // too few params
     'firstOption' + spliterCharacter + 'http//example.com/hello.txt';
   expect(() => StringParams.decode(formatedString)).toThrow();
 });
