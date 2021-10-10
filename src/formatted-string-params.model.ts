@@ -1,6 +1,6 @@
 import { spliterCharacter } from './consts';
 
-export class StringParams {
+export class FormattedStringParams {
   constructor(title: string, picUrl: string, value: string) {
     this.title = title;
     this.picUrl = picUrl;
@@ -12,22 +12,22 @@ export class StringParams {
 
   public encode(): string {
     return (
-      this.title + // TODO check for URLsafe Characters
+      encodeURI(this.title) + // TODO check for URLsafe Characters
       spliterCharacter +
       encodeURI(this.picUrl) +
       spliterCharacter +
-      this.value
+      encodeURI(this.value)
     );
   }
 
-  public static decode(formatedString: string): StringParams {
+  public static decode(formatedString: string): FormattedStringParams {
     const splitedString = formatedString.split(spliterCharacter);
     if (splitedString.length !== 3) throw new Error('invalid format');
 
-    return new StringParams(
-      splitedString[0],
+    return new FormattedStringParams(
+      decodeURI(splitedString[0]),
       decodeURI(splitedString[1]),
-      splitedString[2],
+      decodeURI(splitedString[2]),
     );
   }
 }

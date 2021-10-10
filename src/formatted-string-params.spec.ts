@@ -1,8 +1,8 @@
 import { spliterCharacter } from './consts';
-import { StringParams } from './string-params.model';
+import { FormattedStringParams } from './formatted-string-params.model';
 
 test('testing encoder: must create formatted string.', () => {
-  const stringParams = new StringParams(
+  const stringParams = new FormattedStringParams(
     'firstOption',
     'http//example.com/hello.txt',
     '1',
@@ -17,7 +17,7 @@ test('testing encoder: must create formatted string.', () => {
 });
 
 test('testing encoder with special characters: must create formatted string.', () => {
-  const stringParams = new StringParams(
+  const stringParams = new FormattedStringParams(
     'firstOption',
     'http//example.com/{^}%/hello.txt',
     '1',
@@ -38,8 +38,12 @@ test('testing decoder: must create StringParams Object correctly.', () => {
     'http//example.com/hello.txt' +
     spliterCharacter +
     '1';
-  expect(StringParams.decode(formatedString)).toEqual(
-    new StringParams('firstOption', 'http//example.com/hello.txt', '1'),
+  expect(FormattedStringParams.decode(formatedString)).toEqual(
+    new FormattedStringParams(
+      'firstOption',
+      'http//example.com/hello.txt',
+      '1',
+    ),
   );
 });
 
@@ -50,14 +54,18 @@ test('testing decoder with special characters: must create StringParams Object c
     encodeURI('http//example.com/{^}%/hello.txt') +
     spliterCharacter +
     '1';
-  expect(StringParams.decode(formatedString)).toEqual(
-    new StringParams('firstOption', 'http//example.com/{^}%/hello.txt', '1'),
+  expect(FormattedStringParams.decode(formatedString)).toEqual(
+    new FormattedStringParams(
+      'firstOption',
+      'http//example.com/{^}%/hello.txt',
+      '1',
+    ),
   );
 });
 
 test('testing decoder: must throw error because of wrong format.', () => {
   const formatedString = 'wrong format';
-  expect(() => StringParams.decode(formatedString)).toThrow();
+  expect(() => FormattedStringParams.decode(formatedString)).toThrow();
 });
 
 test('testing decoder: must throw error because of wrong spliterCharacter.', () => {
@@ -67,7 +75,7 @@ test('testing decoder: must throw error because of wrong spliterCharacter.', () 
     encodeURI('http//example.com/{^}%/hello.txt') +
     '@#' + // spliterCharacter
     '1';
-  expect(() => StringParams.decode(formatedString)).toThrow();
+  expect(() => FormattedStringParams.decode(formatedString)).toThrow();
 });
 
 test('testing decoder: must throw error because of wrong part count.', () => {
@@ -79,9 +87,9 @@ test('testing decoder: must throw error because of wrong part count.', () => {
     '1' +
     spliterCharacter +
     'http//example.com/hello.txt';
-  expect(() => StringParams.decode(formatedString)).toThrow();
+  expect(() => FormattedStringParams.decode(formatedString)).toThrow();
 
   formatedString =
     'firstOption' + spliterCharacter + 'http//example.com/hello.txt';
-  expect(() => StringParams.decode(formatedString)).toThrow();
+  expect(() => FormattedStringParams.decode(formatedString)).toThrow();
 });
